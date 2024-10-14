@@ -9,15 +9,20 @@ from timing import TimeData
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModulePosition
 
-
-class RobotInputs():
+class RobotInputBuffer():
     def __init__(self) -> None:
-        # make a controller object and inputs you will grab from controller
-        pass
+        # create a controller object
         self.driveCtrlr = wpilib.XboxController(0)
 
+        # define the variables needed to control the robot
+        #self.MoveForwardButton: bool = False
+        pass
+
     def update(self) -> None:
-        # update the inputs defined in the __init__ method
+        # Map the controller buttons to the robot control variables.
+        # Generally this is just one-to-one, but sometimes it can include
+        # helpful logic (e.g., if auto shooting, then don't move.)
+        #self.myMotorSpeedSetting = self.driveCtrlr.getAButton()
         pass
 
 class Robot(wpilib.TimedRobot):
@@ -27,6 +32,8 @@ class Robot(wpilib.TimedRobot):
 
         # hal buffer is where motor data will be sent to and recieved from
         self.hal = robotHAL.RobotHALBuffer()
+        # Input Buffer is where controller inputs are delivered from
+        self.input = RobotInputBuffer()
 
         # determining if the robot is actually running or in a simulation
         self.hardware: robotHAL.RobotHAL | RobotSimHAL
@@ -38,9 +45,6 @@ class Robot(wpilib.TimedRobot):
 
         # makes a telemetry table that data can be sent to
         self.table = NetworkTableInstance.getDefault().getTable("telemetry")
-
-        # making an instance of the robotInputs class defined earlier
-        self.input = RobotInputs()
 
     # this method runs continuously whenever the robot is on
     def robotPeriodic(self) -> None:

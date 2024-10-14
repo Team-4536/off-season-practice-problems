@@ -10,31 +10,40 @@ from phoenix6.hardware import CANcoder
 from timing import TimeData
 
 
+# The HAL buffer contains all input and output variables which
+# connect the robot general code (robot.py) to the robot 
+# hardware (RobotHAL below). Put all variables in this class 
+# like motor voltages and motor speeds.
 class RobotHALBuffer():
-    # runs once when the RobotHALBuffer is made
-    # put all variables wanted in this class here, like motor voltages and motor speeds
+    # Initialize all variables to a safe value (usually stopped)
     def __init__(self) -> None:
+        # self.shooterSpeed: float = 0 # -1 to 1 volts to motor controller
         pass
 
-    # make all encoders become 0
-    def resetEncoders(self) -> None:
-        pass
-
-    # make all motors stop
+    # Set all variables to a shutdown "safe" value. Usually this
+    # is just stopped, but it could be more complicated (like
+    # hold position for an elevator you don't want to drop to the
+    # ground.)
     def stopMotors(self) -> None:
+        # self.shooterSpeed = 0 # -1 to 1 volts to motor controller
         pass
 
-    # publish the data read from motors, like encoder values
+    # Send robot HALBuffer values to the driver station computer
     def publish(self, table: ntcore.NetworkTable) -> None:
+        #table.putNumber("ShooterSpeed", self.shooterSpeed)
         pass
 
-# this class actually sends the values in the HALBuffer to the motors
+# The RobotHAL sends the values in the HALBuffer to the motors
 class RobotHAL():
-    # define motors here
+    # Define motor objects in RobotHAL:init
     def __init__(self) -> None:
         self.prev = RobotHALBuffer()
 
-    # send values found in the Hal Buffer to the motors and update values found in the hal buffer like encoder positions
+        # self.shooterMotor = rev.CANSparkMax(11, rev.CANSparkMax.MotorType.kBrushless)
+
+    # Send values in the RobotHALBuffer to the motors and update values
     def update(self, buf: RobotHALBuffer, time: TimeData) -> None:
         prev = self.prev
         self.prev = copy.deepcopy(buf)
+        # self.shooterMotor.set(buf.shooterSpeed)
+
