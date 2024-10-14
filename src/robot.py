@@ -22,7 +22,7 @@ class RobotInputBuffer():
         # Map the controller buttons to the robot control variables.
         # Generally this is just one-to-one, but sometimes it can include
         # helpful logic (e.g., if auto shooting, then don't move.)
-        self.myMotorSpeedSetting = self.driveCtrlr.getRawButton(1)
+        self.MoveForwardButton = self.driveCtrlr.getRawButton(1)
         pass
 
 class Robot(wpilib.TimedRobot):
