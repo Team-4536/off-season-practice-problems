@@ -12,17 +12,17 @@ from wpimath.kinematics import ChassisSpeeds, SwerveModulePosition
 class RobotInputBuffer():
     def __init__(self) -> None:
         # create a controller object
-        self.driveCtrlr = wpilib.XboxController(0)
+        self.driveCtrlr = wpilib.Joystick(0) #wpilib.XboxController(0)
 
         # define the variables needed to control the robot
-        #self.MoveForwardButton: bool = False
+        self.MoveForwardButton: bool = False
         pass
 
     def update(self) -> None:
         # Map the controller buttons to the robot control variables.
         # Generally this is just one-to-one, but sometimes it can include
         # helpful logic (e.g., if auto shooting, then don't move.)
-        #self.myMotorSpeedSetting = self.driveCtrlr.getAButton()
+        self.myMotorSpeedSetting = self.driveCtrlr.getRawButton(1)
         pass
 
 class Robot(wpilib.TimedRobot):
@@ -30,9 +30,9 @@ class Robot(wpilib.TimedRobot):
     def robotInit(self) -> None:
         self.time = TimeData(None)
 
-        # hal buffer is where motor data will be sent to and recieved from
+        # HAL buffer is where motor data will be sent and recieved from
         self.hal = robotHAL.RobotHALBuffer()
-        # Input Buffer is where controller inputs are delivered from
+        # Input Buffer is where controller inputs are recieved from
         self.input = RobotInputBuffer()
 
         # determining if the robot is actually running or in a simulation
@@ -51,6 +51,9 @@ class Robot(wpilib.TimedRobot):
         # updating time
         self.time = TimeData(self.time)
 
+        # update the RobotInputs object defined in robotInit to pull values from the controllers
+        self.input.update()
+
         # updating the telemetry table
         self.hal.publish(self.table)
 
@@ -58,13 +61,19 @@ class Robot(wpilib.TimedRobot):
     def teleopInit(self) -> None:
         pass
 
-    # this method runs continously after teleop Mode is enabled
+    # this method runs continously when teleop Mode is enabled
     def teleopPeriodic(self) -> None:
-        # update the RobotInputs object defined in robotInit to pull values from the controllers
-        self.input.update()
         # turn all motors off
         self.hal.stopMotors()
 
+        # All motor control logic must be between "stopMotors()" above 
+        # and "hardware.update()" below!  This makes the motors safe unless
+        # we specifically tell them to move, which we must do every loop to
+        # keep moving.
+        if (self.input.MoveForwardButton == True):
+            self.hal.shooterSpeed = 0.1
+        else :
+            self.hal.shooterSpeed = 0.0
 
         # update the hal with the hal buffer and current time
         self.hardware.update(self.hal, self.time)
