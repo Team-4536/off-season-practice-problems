@@ -1,5 +1,6 @@
 from numpy import short
 from phoenix5 import ControlMode
+import wpilib.shuffleboard
 
 import robotHAL
 import wpilib
@@ -9,16 +10,20 @@ from timing import TimeData
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModulePosition
 
+from tankDrive import TankDrivetrain
+
 
 class RobotInputs():
     def __init__(self) -> None:
         # make a controller object and inputs you will grab from controller
-        pass
-        self.driveCtrlr = wpilib.XboxController(0)
+        self.driveCtrlr = wpilib.Joystick(0) #wpilib.XboxController(0)
+        self.driveX = 0
+        self.driveY = 0
 
     def update(self) -> None:
         # update the inputs defined in the __init__ method
-        pass
+        self.driveX = self.driveCtrlr.getRawAxis(wpilib.Joystick.AxisType.kXAxis)
+        self.driveY = self.driveCtrlr.getRawAxis(wpilib.Joystick.AxisType.kYAxis)
 
 class Robot(wpilib.TimedRobot):
     # this method runs once when the robot is turned on
@@ -39,6 +44,10 @@ class Robot(wpilib.TimedRobot):
         # makes a telemetry table that data can be sent to
         self.table = NetworkTableInstance.getDefault().getTable("telemetry")
 
+        self.odomField = wpilib.Field2d()
+        wpilib.SmartDashboard.putData("odom", self.odomField)
+
+
         # making an instance of the robotInputs class defined earlier
         self.input = RobotInputs()
 
@@ -48,11 +57,11 @@ class Robot(wpilib.TimedRobot):
         self.time = TimeData(self.time)
 
         # updating the telemetry table
-        self.hal.publish(self.table)
+
 
     # this method runs once when teleop Mode is enabled
     def teleopInit(self) -> None:
-        pass
+        self.drivetrain = TankDrivetrain(self.hal)
 
     # this method runs continously after teleop Mode is enabled
     def teleopPeriodic(self) -> None:
@@ -61,6 +70,12 @@ class Robot(wpilib.TimedRobot):
         # turn all motors off
         self.hal.stopMotors()
 
+        self.drivetrain.update(self.input.driveX, self.input.driveY, self.hal)
+
+        position: Pose2d = self.drivetrain.odom.getPose()
+        self.odomField.setRobotPose(position)
+
+        self.hal.publish(self.table)
 
         # update the hal with the hal buffer and current time
         self.hardware.update(self.hal, self.time)
