@@ -7,8 +7,7 @@ from timing import TimeData
 from wpimath.geometry import Rotation2d, Translation2d
 
 
-# spoofs values of the actual motors to allow for testing
-class RobotSimHAL():
+class RobotSimHAL:
     def __init__(self):
         self.prev = RobotHALBuffer()
         self.table = NetworkTableInstance.getDefault().getTable("sim")
