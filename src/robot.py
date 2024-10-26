@@ -13,13 +13,15 @@ from wpimath.kinematics import ChassisSpeeds, SwerveModulePosition, Differential
 class RobotInputs:
     def __init__(self) -> None:
         self.driveController = wpilib.XboxController(0)
+        self.driveJoy = wpilib.Joystick(0)
         self.xDirection = 0
         self.yDirection = 0
 
     def update(self) -> None:
         self.xDirection = self.driveController.getRightX()
         self.yDirection = self.driveController.getLeftY()
-
+        self.xDirection = self.driveJoy.getRawAxis(0)
+        self.yDirection = self.driveJoy.getRawAxis(1)        
 
 class Robot(wpilib.TimedRobot):
     def robotInit(self) -> None:
@@ -50,7 +52,7 @@ class Robot(wpilib.TimedRobot):
         self.input.update()
         self.hal.stopMotors()
 
-        driveTrainSpeeds = ChassisSpeeds(0, self.input.yDirection, self.input.xDirection)
+        driveTrainSpeeds = ChassisSpeeds(-self.input.yDirection, 0, -self.input.xDirection)
         driveTrainWheelSpeeds = self.driveTrainKinamatics.toWheelSpeeds(driveTrainSpeeds)
 
         self.hal.leftDriveMotorVolts = driveTrainWheelSpeeds.left
