@@ -21,7 +21,9 @@ class RobotInputs:
         self.xDirection = self.driveController.getRightX()
         self.yDirection = self.driveController.getLeftY()
         self.xDirection = self.driveJoy.getRawAxis(0)
-        self.yDirection = self.driveJoy.getRawAxis(1)        
+        self.yDirection = self.driveJoy.getRawAxis(1)
+        if self.yDirection > 0.5 : 
+            self.driveController.setRumble(1.0)
 
 class Robot(wpilib.TimedRobot):
     def robotInit(self) -> None:
