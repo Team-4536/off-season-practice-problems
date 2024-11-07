@@ -38,6 +38,7 @@ class Robot(wpilib.TimedRobot):
         else:
             self.hardware = robotHAL.RobotHAL()
         self.hardware.update(self.hal, self.time)
+        
 
         # makes a telemetry table that data can be sent to
         self.table = NetworkTableInstance.getDefault().getTable("telemetry")
