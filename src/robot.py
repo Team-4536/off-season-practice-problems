@@ -13,10 +13,10 @@ from wpimath.kinematics import ChassisSpeeds, SwerveModulePosition, Differential
 class RobotInputs():
     def __init__(self) -> None:
         # make a controller object and inputs you will grab from controller
-        pass
         self.driveCtrlr = wpilib.XboxController(0)
         self.xDirection = 0
         self.yDirection = 0
+        pass
 
     def update(self) -> None:
         # update the inputs defined in the __init__ method
