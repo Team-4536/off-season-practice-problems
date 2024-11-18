@@ -61,7 +61,3 @@ class Robot(wpilib.TimedRobot):
     def disabledPeriodic(self) -> None:
         self.hal.stopMotors()
         self.hardware.update(self.hal, self.time)
-
-
-if __name__ == "__main__":
-    wpilib.run(Robot)
