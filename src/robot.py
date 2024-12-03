@@ -8,22 +8,24 @@ from simHAL import RobotSimHAL
 from timing import TimeData
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModulePosition
+from oneMotorSubsystem import OneMotorSubsystem
 
 
 class RobotInputs():
     def __init__(self) -> None:
         # make a controller object and inputs you will grab from controller
-        pass
         self.driveCtrlr = wpilib.XboxController(0)
+        self.runMotor: bool = False
 
     def update(self) -> None:
         # update the inputs defined in the __init__ method
-        pass
+        self.runMotor = self.driveCtrlr.getAButton()
 
 class Robot(wpilib.TimedRobot):
     # this method runs once when the robot is turned on
     def robotInit(self) -> None:
         self.time = TimeData(None)
+        self.oneMotorSubsystem = OneMotorSubsystem()
 
         # hal buffer is where motor data will be sent to and recieved from
         self.hal = robotHAL.RobotHALBuffer()
@@ -61,6 +63,8 @@ class Robot(wpilib.TimedRobot):
         # turn all motors off
         self.hal.stopMotors()
 
+        self.oneMotorSubsystem.update(self.input.runMotor, self.hal)
+        self.table.putBoolean("Abutton", self.input.runMotor)
 
         # update the hal with the hal buffer and current time
         self.hardware.update(self.hal, self.time)
