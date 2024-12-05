@@ -15,6 +15,9 @@ class RobotHALBuffer():
     # put all variables wanted in this class here, like motor voltages and motor speeds
     def __init__(self) -> None:
         self.oneMotorVolts: float = 0
+        self.rightDriveMotorVolts: float = 0
+        self.leftDriveMotorVolts: float = 0
+
 
     # make all encoders become 0
     def resetEncoders(self) -> None:
@@ -23,10 +26,14 @@ class RobotHALBuffer():
     # make all motors stop
     def stopMotors(self) -> None:
         self.oneMotorVolts = 0
+        self.leftDriveMotorVolts = 0
+        self.rightDriveMotorVolts = 0
 
     # publish the data read from motors, like encoder values
     def publish(self, table: ntcore.NetworkTable) -> None:
         table.putNumber("oneMotorVolts", self.oneMotorVolts)
+        table.putNumber("rightMotorVolts", self.rightDriveMotorVolts)
+        table.putNumber("leftMotorVolts", self.leftDriveMotorVolts)
 
 # this class actually sends the values in the HALBuffer to the motors
 class RobotHAL():
@@ -35,6 +42,8 @@ class RobotHAL():
         self.prev = RobotHALBuffer()
 
         self.oneMotor = rev.CANSparkMax(1, rev.CANSparkMax.MotorType.kBrushless)
+        self.leftDriveMotor = rev.CANSparkMax(2, rev.CANSparkMax.MotorType.kBrushless)
+        self.rightDriveMotor = rev.CANSparkMax(3, rev.CANSparkMax.MotorType.kBrushless)
 
     # send values found in the Hal Buffer to the motors and update values found in the hal buffer like encoder positions
     def update(self, buf: RobotHALBuffer, time: TimeData) -> None:
@@ -42,3 +51,5 @@ class RobotHAL():
         self.prev = copy.deepcopy(buf)
 
         self.oneMotor.setVoltage(buf.oneMotorVolts)
+        self.leftDriveMotor.setVoltage(buf.leftDriveMotorVolts)
+        self.rightDriveMotor.setVoltage(buf.rightDriveMotorVolts)
