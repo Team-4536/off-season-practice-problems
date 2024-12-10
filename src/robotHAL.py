@@ -1,6 +1,5 @@
 import copy
 import math
-
 import navx
 import ntcore
 import rev

@@ -10,6 +10,6 @@ class tankDrive():
 
     def update(self, yAxis: float, xAxis: float, buf: RobotHALBuffer) -> None:
         driveSpeed = ChassisSpeeds(0, yAxis, xAxis)
-        bob = self.drivetrain.toWheelSpeeds(driveSpeed)
-        buf.rightDriveMotorVolts = bob.right
-        buf.leftDriveMotorVolts = bob.left
+        wheelSpeeds = self.drivetrain.toWheelSpeeds(driveSpeed)
+        buf.rightDriveMotorVolts = wheelSpeeds.right
+        buf.leftDriveMotorVolts = wheelSpeeds.left

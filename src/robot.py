@@ -9,6 +9,7 @@ from timing import TimeData
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModulePosition
 from oneMotorSubsystem import OneMotorSubsystem
+from tankDrive import tankDrive
 
 
 class RobotInputs():
@@ -16,16 +17,21 @@ class RobotInputs():
         # make a controller object and inputs you will grab from controller
         self.driveCtrlr = wpilib.XboxController(0)
         self.runMotor: bool = False
+        self.driveTrainJoystickY: float = 0
+        self.driveTrainJoystickX: float = 0
 
     def update(self) -> None:
         # update the inputs defined in the __init__ method
         self.runMotor = self.driveCtrlr.getAButton()
+        self.driveTrainJoystickY = self.driveCtrlr.getLeftY()
+        self.driveTrainJoystickX = self.driveCtrlr.getLeftX()
 
 class Robot(wpilib.TimedRobot):
     # this method runs once when the robot is turned on
     def robotInit(self) -> None:
         self.time = TimeData(None)
         self.oneMotorSubsystem = OneMotorSubsystem()
+        self.tankDriveTrain = tankDrive()
 
         # hal buffer is where motor data will be sent to and recieved from
         self.hal = robotHAL.RobotHALBuffer()
@@ -62,6 +68,11 @@ class Robot(wpilib.TimedRobot):
         self.input.update()
         # turn all motors off
         self.hal.stopMotors()
+
+        self.tankDrive.update(self.input.driveTrainJoystickX, self.hal)
+        self.table.putBoolean("Left Joystick X", self.input.driveTrainJoystickX)
+        self.tankDrive.update(self.input.driveTrainJoystickY, self.hal)
+        self.table.putBoolean("Left Joystick Y", self.input.driveTrainJoystickY)
 
         self.oneMotorSubsystem.update(self.input.runMotor, self.hal)
         self.table.putBoolean("Abutton", self.input.runMotor)
