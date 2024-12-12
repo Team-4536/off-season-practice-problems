@@ -69,10 +69,9 @@ class Robot(wpilib.TimedRobot):
         # turn all motors off
         self.hal.stopMotors()
 
-        self.tankDrive.update(self.input.driveTrainJoystickX, self.hal)
-        self.table.putBoolean("Left Joystick X", self.input.driveTrainJoystickX)
-        self.tankDrive.update(self.input.driveTrainJoystickY, self.hal)
-        self.table.putBoolean("Left Joystick Y", self.input.driveTrainJoystickY)
+        self.tankDriveTrain.update(self.input.driveTrainJoystickY, self.input.driveTrainJoystickX, self.hal)
+        self.table.putValue("Left Joystick X", self.input.driveTrainJoystickX)
+        self.table.putValue("Left Joystick Y", self.input.driveTrainJoystickY)
 
         self.oneMotorSubsystem.update(self.input.runMotor, self.hal)
         self.table.putBoolean("Abutton", self.input.runMotor)
