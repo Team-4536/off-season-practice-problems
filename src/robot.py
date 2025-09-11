@@ -14,10 +14,18 @@ class Robot(wpilib.TimedRobot):
        pass
         
     def teleopInit(self) -> None:
-        self.Motor.set(0.2)
+        self.on = False
 
     def teleopPeriodic(self):
-        pass
+        
+        pressedA = self.driveCtrlr.getAButtonPressed()
+        
+        if pressedA:
+            self.on = not self.on
+        if self.on:
+            self.Motor.set(0.2)
+        else:
+            self.Motor.set(0)
        
 
 if __name__ == "__main__":
