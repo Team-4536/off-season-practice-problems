@@ -1,5 +1,4 @@
 import wpilib
-from timing import TimeData  
 import rev
 from rev import SparkMax
 
