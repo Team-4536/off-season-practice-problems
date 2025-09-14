@@ -1,20 +1,14 @@
 import wpilib
-from timing import TimeData  
-import rev
-from rev import SparkMax
 
 class Robot(wpilib.TimedRobot):
     def robotInit(self) -> None:
-
-        self.Motor =  SparkMax(2, rev.SparkMax.MotorType.kBrushless)
-        
-        self.Motor.set(0)
+        pass
         
     def robotPeriodic(self) -> None:
        pass
         
     def teleopInit(self) -> None:
-        self.Motor.set(0.2)
+        pass
 
     def teleopPeriodic(self):
         pass
