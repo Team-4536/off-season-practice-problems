@@ -3,45 +3,45 @@ import rev
 from rev import SparkMax
 from ntcore import NetworkTableInstance
 
+
 class Robot(wpilib.TimedRobot):
     def robotInit(self) -> None:
 
-        self.table = NetworkTableInstance.getDefault().getTable("telementry")
-        self.driveCtrlr = wpilib.XboxController(0)
-
-        self.joyX = self.driveCtrlr.getLeftY()
-        self.joyY = self.driveCtrlr.getLeftX()
-
-        self.table.putNumber("Joystick X", self.joyX)
-        self.table.putNumber("Joystick Y", self.joyY)
-
-        self.Motor =  SparkMax(2, rev.SparkMax.MotorType.kBrushless)
+        self.MAX_VOLTAGE = 2  # Max speed
+        self.Motor = SparkMax(2, rev.SparkMax.MotorType.kBrushless)
 
         self.Motor.set(0)
-        
+
+        self.table = NetworkTableInstance.getDefault().getTable("telementry")
+
+        self.driveCtrlr = wpilib.XboxController(0)
+
+        self.joyY = self.driveCtrlr.getLeftY()
+
+        self.voltage = self.Motor.getBusVoltage() * self.Motor.getAppliedOutput()
+
+        self.table.putNumber("Motor Voltage", self.voltage)
+        self.table.putNumber("Left Joystick Y", self.joyY)
+
     def robotPeriodic(self) -> None:
-       pass
-        
+        pass
+
     def teleopInit(self) -> None:
-        
-        self.on = False
+        pass
 
     def teleopPeriodic(self):
-        
-        self.table.putNumber("Joystick X", self.joyX)
-        self.table.putNumber("Joystick Y", self.joyY)
-                
-        pressedA = self.driveCtrlr.getAButtonPressed()
-        
-        if pressedA:
-            self.on = not self.on
 
-        if self.on:
-            self.Motor.set(0.2)
+        self.voltage = self.Motor.getBusVoltage() * self.Motor.getAppliedOutput()
+        self.table.putNumber("Motor Voltage", self.voltage)
+        self.joyY = self.driveCtrlr.getLeftY()
+        self.table.putNumber("Left Joystick Y", self.joyY)
+        setPoint = 0
 
-        else:
-            self.Motor.set(0)
-       
+        if self.joyY < -0.08:
+            setPoint = self.joyY * self.MAX_VOLTAGE
+
+        self.Motor.setVoltage(setPoint)
+
 
 if __name__ == "__main__":
     wpilib.run(Robot)
