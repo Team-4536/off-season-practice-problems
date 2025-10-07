@@ -25,6 +25,12 @@ class AutoStage:
         # auto run. (e.g., when running Auto on the practice field.)
         pass
 
+    def getNext(self, r: "Robot"):
+        # This Function contains a string that indicates which stage runs next. It must match
+        # those strings created in robot.py (TOOD: Find a better way to link strings to AS objs.)
+        return "stage2"
+        pass
+
 
 class myCustomAS(AutoStage):
     def __init__(self, numSec: float = 20):
