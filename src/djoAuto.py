@@ -121,3 +121,10 @@ class allStopAS(AutoStage):
 
 
 ## TODO: Replace counter with a Timer Object
+## TODO: Remove "Robot" notation and include __future__ import
+## TODO: Seperate linear example from branching example autostage
+## TODO: Add a pause Autostage (of veriable length)
+## TODO: Move r: "Robot" into contructor so you don't have to call it in
+##          every stage...open question about what we should name it
+##          it would be confusing to use self.r.motor.set() in AS and self.motor.set()
+##          integration with the HAL may clear this up anyway...

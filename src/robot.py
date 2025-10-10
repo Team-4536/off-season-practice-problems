@@ -61,15 +61,6 @@ class Robot(wpilib.TimedRobot):
         else:
             self.Motor.set(0)
 
-    def DisabledPeriodic(self):
-        pass
-
-    def SimulationPeriodic(self):
-        pass
-
-    def TestPeriodic(self):
-        pass
-
 
 if __name__ == "__main__":
     wpilib.run(Robot)
