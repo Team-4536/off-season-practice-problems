@@ -125,7 +125,7 @@ class allStopAS(AutoStage):
 ## TODO: Seperate linear example from branching example autostage
 ## TODO: Add a pause Autostage (of veriable length)
 ## TODO: Move r: "Robot" into contructor so you don't have to call it in
-##          every stage...open question about what we should name it
-##          it would be confusing to use self.r.motor.set() in AS and self.motor.set()
-##          integration with the HAL may clear this up anyway...
+##          every stage...
+##           For now lets assume self.r.motor.set() is the final auto syntax.
+##           There are a alternatives like self.HAL.motor.set()
 ## TODO: Remove djo from lib name
