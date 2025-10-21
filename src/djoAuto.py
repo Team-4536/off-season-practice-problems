@@ -2,10 +2,50 @@ import robot
 from typing import TYPE_CHECKING, Callable
 from ntcore import NetworkTableInstance, NetworkTable
 
+from pathplannerlib.path import PathPlannerPath, PathPlannerTrajectory  # type: ignore
+from pathplannerlib.config import RobotConfig, ModuleConfig, DCMotor  # type: ignore
+from wpimath import units
+from wpimath.geometry import Translation2d
+from wpimath.kinematics import ChassisSpeeds
+
 # from __future__ import annotations
 
 if TYPE_CHECKING:
     from robot import Robot
+
+
+def loadTrajectory(fileName: str, flipped: bool) -> PathPlannerTrajectory:
+    oneftInMeters = units.feetToMeters(1)
+    mass = units.lbsToKilograms(122)
+    moi = (
+        (1 / 12)
+        * mass
+        * (oneftInMeters * oneftInMeters + oneftInMeters * oneftInMeters)
+    )
+    # motor = SparkMax(1, rev.SparkMax.MotorType.kBrushless)
+    motor = DCMotor(12, 2.6, 105, 1.8, 5676, 1)
+    modConfig = ModuleConfig(0.05, 1.1, 9.5, motor, 42, 1)
+    RConfig = RobotConfig(
+        mass,
+        moi,
+        modConfig,
+        [
+            Translation2d(-oneftInMeters, oneftInMeters),
+            Translation2d(oneftInMeters, oneftInMeters),
+            Translation2d(-oneftInMeters, -oneftInMeters),
+            Translation2d(oneftInMeters, -oneftInMeters),
+        ],
+    )
+    p = PathPlannerPath.fromPathFile(fileName)
+    if flipped:
+        p = p.flipPath()
+
+    t = p.generateTrajectory(
+        ChassisSpeeds(),
+        p.getStartingHolonomicPose().rotation(),
+        RConfig,
+    )
+    return t
 
 
 class AutoStage:
