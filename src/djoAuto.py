@@ -13,6 +13,8 @@ from wpimath.kinematics import ChassisSpeeds
 if TYPE_CHECKING:
     from robot import Robot
 
+# for example use: leftCorner-leftDiag.path
+
 
 def loadTrajectory(fileName: str, flipped: bool) -> PathPlannerTrajectory:
     oneftInMeters = units.feetToMeters(1)
