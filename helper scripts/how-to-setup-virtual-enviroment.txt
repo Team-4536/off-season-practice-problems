@@ -1,0 +1,22 @@
+Open a new terminal with 
+Menu --> Terminal --> New Terminal
+or
+CTRL-SHIFT-~
+
+Make sure you are in the correct directory.  You terminal should looks like this:
+PS C:\Repos\off-season-practice-problems> 
+
+Enter the following commands one at a time - contact a mentor 
+if they fail or you get any error messages:
+py -m venv .venv
+.\.venv\Scripts\activate
+py -m pip install robotpy
+py -m pip install mypy
+py -m robotpy --main src sync
+
+
+Check that python and the venv is setup correct by running:
+where.exe python
+
+if the first result is 'C:\repos\off-season-practice-problems\.venv\Scripts\python.exe' 
+then it is activated
