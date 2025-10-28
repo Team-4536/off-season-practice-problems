@@ -2,11 +2,12 @@ import robot
 from typing import TYPE_CHECKING, Callable
 from ntcore import NetworkTableInstance, NetworkTable
 
-from pathplannerlib.path import PathPlannerPath, PathPlannerTrajectory  # type: ignore
-from pathplannerlib.config import RobotConfig, ModuleConfig, DCMotor  # type: ignore
+from pathplannerlib.path import PathPlannerPath, PathPlannerTrajectory
+from pathplannerlib.config import RobotConfig, ModuleConfig, DCMotor
 from wpimath import units
 from wpimath.geometry import Translation2d
 from wpimath.kinematics import ChassisSpeeds
+import wpilib
 
 # from __future__ import annotations
 
@@ -19,14 +20,17 @@ if TYPE_CHECKING:
 def loadTrajectory(fileName: str, flipped: bool) -> PathPlannerTrajectory:
     oneftInMeters = units.feetToMeters(1)
     mass = units.lbsToKilograms(122)
-    moi = (
-        (1 / 12)
-        * mass
-        * (oneftInMeters * oneftInMeters + oneftInMeters * oneftInMeters)
+    # moi = (
+    #     (1 / 12)
+    #     * mass
+    #     * (oneftInMeters * oneftInMeters + oneftInMeters * oneftInMeters)
+    # ) # Old
+    moi = (  # moi = 1/6 * m * side_in_meters^2 , for a cube 32x32inches :
+        (1 / 6.0) * mass * (32.0 / 12.0 * oneftInMeters) * (32.0 / 12.0 * oneftInMeters)
     )
     # motor = SparkMax(1, rev.SparkMax.MotorType.kBrushless)
-    motor = DCMotor(12, 2.6, 105, 1.8, 5676, 1)
-    modConfig = ModuleConfig(0.05, 1.1, 9.5, motor, 42, 1)
+    motor = DCMotor(12, 2.6, 105, 1.8, 594.39, 1)  # old RPM = 5676
+    modConfig = ModuleConfig(0.05, 1.1, 1.5, motor, 42, 1)  # old COF = 9.5
     RConfig = RobotConfig(
         mass,
         moi,
@@ -43,7 +47,7 @@ def loadTrajectory(fileName: str, flipped: bool) -> PathPlannerTrajectory:
         p = p.flipPath()
 
     t = p.generateTrajectory(
-        ChassisSpeeds(),
+        ChassisSpeeds(0, 0, 0),  # starting speeds = 0 in x,y,rot
         p.getStartingHolonomicPose().rotation(),
         RConfig,
     )
@@ -159,6 +163,63 @@ class allStopAS(AutoStage):
 
     def getNext(self, r: "Robot"):
         return self
+        pass
+
+
+class FiddleWithTrajAS:
+    def __init__(self):
+        self.name = "David Fiddling with Trajectories"
+        # all auto stages should report their name and optionally other debug info
+        self.table = NetworkTableInstance.getDefault().getTable("telemetry")
+
+        self.myTraj = loadTrajectory("test", False)
+        pass
+
+    def setNext(self, nextAS: "AutoStage"):
+        self.nextStage = nextAS
+        pass
+
+    def autoInit(self, r: "Robot"):
+        # This is similar to __init__ but it will be called immediately before the Auto Stage
+        # begins, it is useful for resetting encode positions or reseting gyros, etc.
+        #  Anything that should be reset each auto run.
+        self.startRealTime = wpilib.getTime()
+        self.curStageTime = 0
+        self.endStageTime = self.myTraj.getTotalTimeSeconds()
+        bob = self.myTraj.sample(0)
+        self.table.putNumber("djo Traj Init X", self.myTraj.getInitialPose().x)
+        self.table.putNumber("djo Traj Init Y", self.myTraj.getInitialPose().y)
+        self.table.putNumber(
+            "djo Traj Init Rot", self.myTraj.getInitialPose().rotation().radians()
+        )
+        self.table.putNumber("djo Traj length", len(self.myTraj.getStates()))
+        self.table.putNumber("djo Traj Total Time", self.myTraj.getTotalTimeSeconds())
+
+        pass
+
+    def run(self, r: "Robot"):
+        self.curTime = wpilib.getTime()
+        self.elapsedTime = self.curTime - self.startRealTime
+        all_states = self.myTraj.getStates()
+        curState = self.myTraj.sample(self.elapsedTime)
+        curStateIndex = all_states.index(curState)
+        # if all_states:
+        #     curState = all_states.pop()
+        self.table.putNumber("djo Traj cur X deltaPos", curState.deltaPos.real)
+        self.table.putNumber("djo Traj cur X linVel", curState.linearVelocity.real)
+        self.table.putNumber("djo Traj cur time", self.elapsedTime)
+        self.table.putNumber("djo Traj cur state index", curStateIndex)
+        self.table.putNumber("djo Traj cur X", curState.pose.X())
+        pass
+
+    def isDone(self, r: "Robot") -> bool:
+        # this will be called at the end of the run() and if it returns true will stop the stage
+        return False
+
+    def getNext(self, r: "Robot"):
+        # This Function contains a string that indicates which stage runs next. It must match
+        # those strings created in robot.py (TOOD: Find a better way to link strings to AS objs.)
+        self.nextStage
         pass
 
 

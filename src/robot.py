@@ -23,7 +23,10 @@ class Robot(wpilib.TimedRobot):
         auto1_start.setNext(auto1_shoot)
         auto1_shoot.setNext(auto1_moveBack)
         auto1_moveBack.setNext(auto1_allStop)
-        self.curAutoStage = auto1_start
+
+        trajTest_start = djoAuto.FiddleWithTrajAS()
+
+        self.curAutoStage = trajTest_start
         self.table = NetworkTableInstance.getDefault().getTable("telemetry")
 
     def robotPeriodic(self) -> None:
