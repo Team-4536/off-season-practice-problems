@@ -1,7 +1,7 @@
 import wpilib
-
 import simHAL
 from robotHAL import RobotHAL, RobotHALBuffer
+from timing import TimeData
 
 
 class Robot(wpilib.TimedRobot):
@@ -9,11 +9,8 @@ class Robot(wpilib.TimedRobot):
         if self.isSimulation:
             self.RobotHAL = simHAL.RobotSimHAL()
         else:
-            self.RobotHAL = RobotHAL
-
-        self.buf = RobotHALBuffer()
-
-        RobotHAL.update(self.buf)
+            self.buf = RobotHALBuffer()
+            self.RobotHAL = RobotHAL()
 
     def robotPeriodic(self) -> None:
         pass

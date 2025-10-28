@@ -12,6 +12,10 @@ class RobotHALBuffer:
         self.bButton = self.controller.getBButton()
         self.xButton = self.controller.getXButton()
         self.yButton = self.controller.getYButton()
+        self.table = NetworkTableInstance.getDefault().getTable("telemetry")
+
+        self.table.putNumber("motorOne volts", self.motorOneVolts)
+        self.table.putNumber("motorTwo volts", self.motorTwoVolts)
 
 
 class RobotHAL:
