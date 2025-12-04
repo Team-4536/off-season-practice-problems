@@ -16,8 +16,9 @@ class Robot(wpilib.TimedRobot):
         self.table.putNumber("voltage", 1)
 
     def robotPeriodic(self) -> None:
-        self.table.putNumber(
-            "motorOutput", self.Motor.getAppliedOutput()  # This doesn't work! Yet...
+        self.table.putNumber(  # This doesn't work in sim! Yet...
+            "motorOutput",
+            self.Motor.getAppliedOutput(),
         )
 
     def teleopInit(self) -> None:
