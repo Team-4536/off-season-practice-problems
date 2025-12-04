@@ -35,8 +35,10 @@ class Robot(wpilib.TimedRobot):
 
         if self.on:
             self.Motor.set(0.2)
+            self.table.putNumber("ManualMotorDrive", 0.2)
         else:
             self.Motor.set(0)
+            self.table.putNumber("ManualMotorDrive", 0)
 
 
 if __name__ == "__main__":
